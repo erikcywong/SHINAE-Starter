@@ -34,94 +34,416 @@
             overflow-x: hidden;
         }
         
-        /* 导航栏 - X风格 */
+        /* =============================================
+           NAVIGATION — Hover Dropdown + Scroll Spy
+           ============================================= */
+
         header {
-            background-color: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
             border-bottom: 1px solid var(--x-border);
+            transition: padding 0.35s ease, background-color 0.35s ease, box-shadow 0.35s ease;
         }
-        
+
+        /* Scrolled/shrink state */
+        header.scrolled {
+            background-color: rgba(0, 0, 0, 0.92);
+            box-shadow: 0 4px 32px rgba(0, 0, 0, 0.55);
+        }
+
+        header.scrolled .nav-container {
+            padding-top: 0.55rem;
+            padding-bottom: 0.55rem;
+        }
+
         .nav-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.8rem 5%;
+            padding: 0.85rem 5%;
             max-width: 1400px;
             margin: 0 auto;
+            transition: padding 0.35s ease;
         }
-        
+
+        /* ---- Logo ---- */
         .logo {
             font-size: 1.8rem;
             font-weight: 700;
             display: flex;
             align-items: center;
             color: var(--x-white);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            user-select: none;
         }
-        
+
         .logo i {
             color: var(--x-blue);
             margin-right: 10px;
         }
-        
+
         .logo sup {
             font-size: 0.6rem;
             color: var(--x-blue);
             vertical-align: super;
         }
-        
+
+        /* ---- Primary Nav Links ---- */
         .nav-links {
             display: flex;
             list-style: none;
+            align-items: center;
+            gap: 0;
         }
-        
-        .nav-links li {
-            margin-left: 1.5rem;
+
+        /* Each top-level nav item is a "dropdown trigger" */
+        .nav-links > li {
+            position: relative;
         }
-        
-        .nav-links a {
-            color: var(--x-white);
+
+        .nav-links > li > a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--x-gray-text);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
+            letter-spacing: 0.01em;
+            padding: 0.55rem 1.1rem;
+            border-radius: 8px;
+            transition: color 0.2s ease, background 0.2s ease;
+            white-space: nowrap;
         }
-        
-        .nav-links a:hover {
+
+        .nav-links > li > a .nav-chevron {
+            font-size: 0.65rem;
+            opacity: 0.55;
+            transition: transform 0.25s ease, opacity 0.2s ease;
+        }
+
+        .nav-links > li > a:hover,
+        .nav-links > li.active > a {
+            color: var(--x-white);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .nav-links > li.active > a {
             color: var(--x-blue);
         }
-        
+
+        /* Active underline indicator */
+        .nav-links > li > a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 60%;
+            height: 2px;
+            background: var(--x-blue);
+            border-radius: 2px;
+            transition: transform 0.25s ease;
+        }
+
+        .nav-links > li.active > a::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        /* Hover: show chevron rotation */
+        .nav-links > li:hover > a .nav-chevron {
+            transform: rotate(180deg);
+            opacity: 1;
+        }
+
+        /* ---- Dropdown Panel ---- */
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(6px);
+            background: #12141a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            min-width: 230px;
+            padding: 0.6rem;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+            z-index: 999;
+        }
+
+        /* Arrow caret */
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: #12141a;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            transform: translateX(-50%) rotate(45deg);
+        }
+
+        /* Show on hover */
+        .nav-links > li:hover > .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Dropdown item */
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.7rem 1rem;
+            color: var(--x-gray-text);
+            text-decoration: none;
+            font-size: 0.88rem;
+            border-radius: 8px;
+            transition: background 0.18s ease, color 0.18s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(29, 155, 240, 0.1);
+            color: var(--x-white);
+        }
+
+        .dropdown-menu a .dd-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--x-blue);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            transition: background 0.18s ease;
+        }
+
+        .dropdown-menu a:hover .dd-icon {
+            background: rgba(29, 155, 240, 0.18);
+        }
+
+        .dropdown-menu a .dd-text strong {
+            display: block;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--x-white);
+            margin-bottom: 1px;
+        }
+
+        .dropdown-menu a .dd-text span {
+            font-size: 0.75rem;
+            color: var(--x-light-gray);
+            line-height: 1.3;
+        }
+
+        /* Divider inside dropdown */
+        .dropdown-menu .dd-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+            margin: 0.4rem 0.5rem;
+        }
+
+        /* ---- Mega Dropdown (wider, 2-col) ---- */
+        .dropdown-menu.mega {
+            min-width: 460px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .dropdown-menu.mega .mega-col {
+            padding: 0.3rem;
+        }
+
+        .dropdown-menu.mega .mega-col-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--x-light-gray);
+            padding: 0.5rem 1rem 0.3rem;
+        }
+
+        /* ---- Nav Actions (right side) ---- */
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
         }
-        
+
         .search-box {
             display: flex;
             align-items: center;
-            background-color: var(--x-card-bg);
+            background-color: rgba(255,255,255,0.05);
             border-radius: 9999px;
-            padding: 0.6rem 1rem;
-            margin-right: 1rem;
+            padding: 0.5rem 1rem;
             border: 1px solid var(--x-border);
+            transition: border-color 0.2s ease, background 0.2s ease;
         }
-        
+
+        .search-box:focus-within {
+            border-color: var(--x-blue);
+            background: rgba(29, 155, 240, 0.06);
+        }
+
         .search-box input {
             border: none;
             background: transparent;
-            padding: 0.3rem;
-            width: 180px;
+            padding: 0.25rem;
+            width: 160px;
             outline: none;
             color: var(--x-white);
+            font-size: 0.88rem;
         }
-        
+
+        .search-box input::placeholder {
+            color: var(--x-light-gray);
+        }
+
         .search-box i {
             color: var(--x-light-gray);
             margin-right: 8px;
+            font-size: 0.85rem;
+        }
+
+        /* ---- Hamburger (mobile) ---- */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            border: 1px solid var(--x-border);
+            border-radius: 8px;
+            background: transparent;
+            gap: 5px;
+            padding: 0;
+            transition: border-color 0.2s;
+        }
+
+        .hamburger:hover {
+            border-color: var(--x-light-gray);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--x-white);
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* ---- Mobile Nav Drawer ---- */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100dvh;
+            background: rgba(0,0,0,0.97);
+            z-index: 999;
+            flex-direction: column;
+            padding: 5rem 2rem 2rem;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-nav.open {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-links {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .mobile-nav-links > li {
+            border-bottom: 1px solid var(--x-border);
+        }
+
+        .mobile-nav-links > li > a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 0;
+            color: var(--x-white);
+            text-decoration: none;
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .mobile-nav-links > li > a i {
+            color: var(--x-light-gray);
+            font-size: 0.8rem;
+            transition: transform 0.25s;
+        }
+
+        .mobile-nav-links > li.open > a i {
+            transform: rotate(90deg);
+        }
+
+        .mobile-submenu {
+            display: none;
+            padding: 0.4rem 0 1rem 0.5rem;
+        }
+
+        .mobile-nav-links > li.open > .mobile-submenu {
+            display: block;
+        }
+
+        .mobile-submenu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.65rem 0;
+            color: var(--x-light-gray);
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .mobile-submenu a i {
+            width: 20px;
+            text-align: center;
+            color: var(--x-blue);
+        }
+
+        .mobile-submenu a:hover {
+            color: var(--x-white);
+        }
+
+        .mobile-nav-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: auto;
         }
         
         .cta-button {
@@ -585,12 +907,22 @@
             font-size: 0.9rem;
         }
         
-        /* 响应式设计 */
+        /* =============================================
+           RESPONSIVE — Mobile / Tablet
+           ============================================= */
         @media (max-width: 1024px) {
             .nav-links {
                 display: none;
             }
-            
+
+            .hamburger {
+                display: flex;
+            }
+
+            .mobile-nav {
+                display: flex;
+            }
+
             .hero h1 {
                 font-size: 2.5rem;
             }
@@ -629,6 +961,12 @@
             .secondary-button, .cta-button {
                 padding: 0.6rem 1rem;
                 font-size: 0.8rem;
+            }
+
+            /* Hide login/member buttons in header on small screens */
+            .nav-actions .secondary-button,
+            .nav-actions .cta-button {
+                display: none;
             }
         }
         
@@ -866,37 +1204,205 @@
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <header>
+    <!-- ========== HEADER / NAV ========== -->
+    <header id="main-header">
         <div class="nav-container">
-            <div class="logo">
+            <!-- Logo -->
+            <a href="#" class="logo">
                 <i class="fas fa-feather-alt"></i>
                 <span>JEBIstarter<sup>®</sup></span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#concept">核心理念</a></li>
-                <li><a href="#spaces">空间体验</a></li>
-                <li><a href="#projects">创新众筹</a></li>
-                <li><a href="#sustainability">低碳承诺</a></li>
-                <li><a href="#community">社区动态</a></li>
+            </a>
+
+            <!-- Desktop Nav -->
+            <ul class="nav-links" id="desktop-nav">
+
+                <!-- Explore (Concept) -->
+                <li data-section="concept">
+                    <a href="#concept">
+                        Explore
+                        <i class="fas fa-chevron-down nav-chevron"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="#concept" class="nav-scroll-link">
+                            <span class="dd-icon"><i class="fas fa-bolt"></i></span>
+                            <span class="dd-text">
+                                <strong>Innovation Hub</strong>
+                                <span>Our founding philosophy</span>
+                            </span>
+                        </a>
+                        <a href="#sustainability" class="nav-scroll-link">
+                            <span class="dd-icon"><i class="fas fa-leaf"></i></span>
+                            <span class="dd-text">
+                                <strong>Low-Carbon Promise</strong>
+                                <span>Sustainability at our core</span>
+                            </span>
+                        </a>
+                        <a href="#community" class="nav-scroll-link">
+                            <span class="dd-icon"><i class="fas fa-users"></i></span>
+                            <span class="dd-text">
+                                <strong>Community</strong>
+                                <span>Co-create with us</span>
+                            </span>
+                        </a>
+                    </div>
+                </li>
+
+                <!-- Spaces -->
+                <li data-section="spaces">
+                    <a href="#spaces">
+                        Spaces
+                        <i class="fas fa-chevron-down nav-chevron"></i>
+                    </a>
+                    <div class="dropdown-menu mega">
+                        <div class="mega-col">
+                            <div class="mega-col-label">Experience</div>
+                            <a href="#spaces" class="nav-scroll-link">
+                                <span class="dd-icon"><i class="fas fa-rocket"></i></span>
+                                <span class="dd-text">
+                                    <strong>Incubation Zone</strong>
+                                    <span>Crowdfund & validate ideas</span>
+                                </span>
+                            </a>
+                            <a href="#spaces" class="nav-scroll-link">
+                                <span class="dd-icon"><i class="fas fa-flask"></i></span>
+                                <span class="dd-text">
+                                    <strong>Workshop Studio</strong>
+                                    <span>Roasting, brewing & DIY</span>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="mega-col">
+                            <div class="mega-col-label">Lifestyle</div>
+                            <a href="#spaces" class="nav-scroll-link">
+                                <span class="dd-icon"><i class="fas fa-shopping-bag"></i></span>
+                                <span class="dd-text">
+                                    <strong>Sustainable Retail</strong>
+                                    <span>Curated low-carbon brands</span>
+                                </span>
+                            </a>
+                            <a href="#spaces" class="nav-scroll-link">
+                                <span class="dd-icon"><i class="fas fa-seedling"></i></span>
+                                <span class="dd-text">
+                                    <strong>Shared Oasis</strong>
+                                    <span>Co-working & social lounge</span>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Crowdfund -->
+                <li data-section="projects">
+                    <a href="#projects">
+                        Crowdfund
+                        <i class="fas fa-chevron-down nav-chevron"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="#projects" class="nav-scroll-link">
+                            <span class="dd-icon"><i class="fas fa-capsules"></i></span>
+                            <span class="dd-text">
+                                <strong>Biodegradable Capsule</strong>
+                                <span>75% funded · 15 days left</span>
+                            </span>
+                        </a>
+                        <a href="#projects" class="nav-scroll-link">
+                            <span class="dd-icon"><i class="fas fa-sun"></i></span>
+                            <span class="dd-text">
+                                <strong>Solar Roaster</strong>
+                                <span>42% funded · 28 days left</span>
+                            </span>
+                        </a>
+                        <a href="#projects" class="nav-scroll-link">
+                            <span class="dd-icon"><i class="fas fa-recycle"></i></span>
+                            <span class="dd-text">
+                                <strong>Grounds Upcycle</strong>
+                                <span>93% funded · 5 days left</span>
+                            </span>
+                        </a>
+                        <div class="dd-divider"></div>
+                        <a href="#projects" class="nav-scroll-link">
+                            <span class="dd-icon"><i class="fas fa-plus"></i></span>
+                            <span class="dd-text">
+                                <strong>View All Projects</strong>
+                                <span>Browse the full lineup</span>
+                            </span>
+                        </a>
+                    </div>
+                </li>
+
+                <!-- Community (simple link, no dropdown) -->
+                <li data-section="community">
+                    <a href="#community">Events</a>
+                </li>
+
             </ul>
+
+            <!-- Right-side actions -->
             <div class="nav-actions">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="搜索项目...">
+                    <input type="text" placeholder="Search projects…">
                 </div>
-                <button class="secondary-button" onclick="openModal('loginModal')">登录</button>
-                <button class="cta-button" onclick="openModal('membershipModal')">成为会员</button>
+                <button class="secondary-button" onclick="openModal('loginModal')">Sign In</button>
+                <button class="cta-button" onclick="openModal('membershipModal')">Join Now</button>
+                <!-- Hamburger (mobile only) -->
+                <button class="hamburger" id="hamburger-btn" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- ========== MOBILE NAV DRAWER ========== -->
+    <nav class="mobile-nav" id="mobile-nav" aria-hidden="true">
+        <ul class="mobile-nav-links">
+            <li>
+                <a href="#concept" class="mobile-scroll-link">
+                    Explore <i class="fas fa-chevron-right"></i>
+                </a>
+                <div class="mobile-submenu">
+                    <a href="#concept" class="mobile-scroll-link"><i class="fas fa-bolt"></i> Innovation Hub</a>
+                    <a href="#sustainability" class="mobile-scroll-link"><i class="fas fa-leaf"></i> Low-Carbon Promise</a>
+                    <a href="#community" class="mobile-scroll-link"><i class="fas fa-users"></i> Community</a>
+                </div>
+            </li>
+            <li>
+                <a href="#spaces" class="mobile-scroll-link">
+                    Spaces <i class="fas fa-chevron-right"></i>
+                </a>
+                <div class="mobile-submenu">
+                    <a href="#spaces" class="mobile-scroll-link"><i class="fas fa-rocket"></i> Incubation Zone</a>
+                    <a href="#spaces" class="mobile-scroll-link"><i class="fas fa-flask"></i> Workshop Studio</a>
+                    <a href="#spaces" class="mobile-scroll-link"><i class="fas fa-shopping-bag"></i> Sustainable Retail</a>
+                    <a href="#spaces" class="mobile-scroll-link"><i class="fas fa-seedling"></i> Shared Oasis</a>
+                </div>
+            </li>
+            <li>
+                <a href="#projects" class="mobile-scroll-link">
+                    Crowdfund <i class="fas fa-chevron-right"></i>
+                </a>
+                <div class="mobile-submenu">
+                    <a href="#projects" class="mobile-scroll-link"><i class="fas fa-capsules"></i> Biodegradable Capsule</a>
+                    <a href="#projects" class="mobile-scroll-link"><i class="fas fa-sun"></i> Solar Roaster</a>
+                    <a href="#projects" class="mobile-scroll-link"><i class="fas fa-recycle"></i> Grounds Upcycle</a>
+                </div>
+            </li>
+            <li>
+                <a href="#community" class="mobile-scroll-link">Events</a>
+            </li>
+        </ul>
+        <div class="mobile-nav-actions">
+            <button class="secondary-button" style="width:100%;" onclick="openModal('loginModal'); closeMobileNav();">Sign In</button>
+            <button class="cta-button" style="width:100%;" onclick="openModal('membershipModal'); closeMobileNav();">Join Now</button>
+        </div>
+    </nav>
 
     <!-- 主视觉区域 -->
     <section class="hero">
         <div class="hero-content">
             <h1>从创意到生活方式</h1>
-            <p>全球首个融合X.com设计理念的咖啡主题低碳生活购物中心</p>
-            <button class="cta-button" style="padding: 0.9rem 2rem; font-size: 1rem;">探索空间</button>
+            <p>全球首个融合咖啡主题低碳生活购物中心</p>
+            <button class="cta-button" style="padding: 0.9rem 2rem; font-size: 1rem;" onclick="openModal('exploreSpacesModal')">探索空间</button>
         </div>
     </section>
 
@@ -1148,6 +1654,150 @@
             <p>&copy; 2025 JEBIstarter<sup>®</sup> 咖啡主题低碳生活购物中心. 保留所有权利.</p>
         </div>
     </footer>
+
+    <!-- ========== MODAL: Explore Spaces ========== -->
+    <div id="exploreSpacesModal" class="modal-overlay">
+        <div class="modal-content" style="max-width:680px;">
+            <div class="modal-header" style="border-bottom:1px solid #2F3336;">
+                <h2 style="font-size:1.4rem; display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-compass" style="color:#1D9BF0;"></i>
+                    Discover Our Spaces
+                </h2>
+                <button class="modal-close" onclick="closeModal('exploreSpacesModal')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding:0;">
+
+                <!-- Hero banner -->
+                <div style="
+                    background: linear-gradient(135deg, rgba(29,155,240,0.18) 0%, rgba(0,186,124,0.14) 100%);
+                    padding: 2rem 2rem 1.6rem;
+                    border-bottom: 1px solid #2F3336;
+                ">
+                    <p style="color:#E7E9EA; font-size:1rem; line-height:1.7; margin:0;">
+                        JEBIstarter is more than a coffee shop — it's a <strong style="color:#fff;">living ecosystem</strong> where 
+                        innovation meets sustainability. Four distinct zones, one shared mission: redefine low-carbon living 
+                        from the ground up.
+                    </p>
+                </div>
+
+                <!-- 4 zones grid -->
+                <div style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1px;
+                    background: #2F3336;
+                ">
+                    <!-- Zone 1 -->
+                    <div style="background:#16181C; padding:1.5rem; transition:background 0.2s;" 
+                         onmouseenter="this.style.background='#202327'" 
+                         onmouseleave="this.style.background='#16181C'">
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:0.9rem;">
+                            <span style="
+                                width:40px; height:40px; border-radius:10px;
+                                background:rgba(29,155,240,0.12);
+                                display:flex; align-items:center; justify-content:center;
+                                color:#1D9BF0; font-size:1rem; flex-shrink:0;
+                            "><i class="fas fa-rocket"></i></span>
+                            <strong style="color:#fff; font-size:0.95rem;">Incubation Zone</strong>
+                        </div>
+                        <p style="color:#71767B; font-size:0.83rem; line-height:1.65; margin:0;">
+                            Back ideas before they launch. Prototype coffee gadgets and eco-products 
+                            get a live testing ground — backed by real customers, validated by real demand.
+                        </p>
+                        <div style="margin-top:0.9rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
+                            <span style="background:#202327; color:#1D9BF0; font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:20px; border:1px solid #2F3336;">Crowdfunding</span>
+                            <span style="background:#202327; color:#1D9BF0; font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:20px; border:1px solid #2F3336;">Beta Testing</span>
+                        </div>
+                    </div>
+
+                    <!-- Zone 2 -->
+                    <div style="background:#16181C; padding:1.5rem; transition:background 0.2s;"
+                         onmouseenter="this.style.background='#202327'" 
+                         onmouseleave="this.style.background='#16181C'">
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:0.9rem;">
+                            <span style="
+                                width:40px; height:40px; border-radius:10px;
+                                background:rgba(0,186,124,0.12);
+                                display:flex; align-items:center; justify-content:center;
+                                color:#00BA7C; font-size:1rem; flex-shrink:0;
+                            "><i class="fas fa-flask"></i></span>
+                            <strong style="color:#fff; font-size:0.95rem;">Workshop Studio</strong>
+                        </div>
+                        <p style="color:#71767B; font-size:0.83rem; line-height:1.65; margin:0;">
+                            Hands-on roasting, pour-over masterclasses, and DIY upcycling sessions. 
+                            Every class is zero-waste by design — grounds become compost, nothing is discarded.
+                        </p>
+                        <div style="margin-top:0.9rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
+                            <span style="background:#202327; color:#00BA7C; font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:20px; border:1px solid #2F3336;">Roasting</span>
+                            <span style="background:#202327; color:#00BA7C; font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:20px; border:1px solid #2F3336;">DIY Upcycle</span>
+                        </div>
+                    </div>
+
+                    <!-- Zone 3 -->
+                    <div style="background:#16181C; padding:1.5rem; border-top:1px solid #2F3336; transition:background 0.2s;"
+                         onmouseenter="this.style.background='#202327'" 
+                         onmouseleave="this.style.background='#16181C'">
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:0.9rem;">
+                            <span style="
+                                width:40px; height:40px; border-radius:10px;
+                                background:rgba(244,33,46,0.1);
+                                display:flex; align-items:center; justify-content:center;
+                                color:#F4212E; font-size:1rem; flex-shrink:0;
+                            "><i class="fas fa-shopping-bag"></i></span>
+                            <strong style="color:#fff; font-size:0.95rem;">Sustainable Retail</strong>
+                        </div>
+                        <p style="color:#71767B; font-size:0.83rem; line-height:1.65; margin:0;">
+                            Only brands that have passed community validation earn shelf space here. 
+                            Every product carries a verified carbon footprint label — transparent, honest, circular.
+                        </p>
+                        <div style="margin-top:0.9rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
+                            <span style="background:#202327; color:#F4212E; font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:20px; border:1px solid #2F3336;">Verified Brands</span>
+                            <span style="background:#202327; color:#F4212E; font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:20px; border:1px solid #2F3336;">Carbon Label</span>
+                        </div>
+                    </div>
+
+                    <!-- Zone 4 -->
+                    <div style="background:#16181C; padding:1.5rem; border-top:1px solid #2F3336; transition:background 0.2s;"
+                         onmouseenter="this.style.background='#202327'" 
+                         onmouseleave="this.style.background='#16181C'">
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:0.9rem;">
+                            <span style="
+                                width:40px; height:40px; border-radius:10px;
+                                background:rgba(255,212,0,0.1);
+                                display:flex; align-items:center; justify-content:center;
+                                color:#FFD400; font-size:1rem; flex-shrink:0;
+                            "><i class="fas fa-seedling"></i></span>
+                            <strong style="color:#fff; font-size:0.95rem;">Shared Oasis</strong>
+                        </div>
+                        <p style="color:#71767B; font-size:0.83rem; line-height:1.65; margin:0;">
+                            A green co-working lounge powered by 100% solar energy. 
+                            Sip specialty coffee, plug in your laptop, and build the next big sustainable idea with 
+                            like-minded people around you.
+                        </p>
+                        <div style="margin-top:0.9rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
+                            <span style="background:#202327; color:#FFD400; font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:20px; border:1px solid #2F3336;">Solar Powered</span>
+                            <span style="background:#202327; color:#FFD400; font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:20px; border:1px solid #2F3336;">Co-working</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer CTA -->
+                <div style="padding:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+                    <p style="color:#71767B; font-size:0.85rem; margin:0;">
+                        <i class="fas fa-map-marker-alt" style="color:#1D9BF0; margin-right:6px;"></i>
+                        Shenzhen · Science Park, Nanshan District
+                    </p>
+                    <div style="display:flex; gap:0.75rem;">
+                        <button class="secondary-button" style="padding:0.6rem 1.2rem; font-size:0.85rem;" onclick="closeModal('exploreSpacesModal')">Close</button>
+                        <button class="cta-button" style="padding:0.6rem 1.2rem; font-size:0.85rem;" onclick="closeModal('exploreSpacesModal'); document.querySelector('#spaces').scrollIntoView({behavior:'smooth'});">
+                            View All Spaces <i class="fas fa-arrow-right" style="margin-left:6px;"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <!-- 模态框：登录 -->
     <div id="loginModal" class="modal-overlay">
@@ -1530,20 +2180,155 @@
     </div>
 
     <script>
-        // 简单的导航栏滚动效果
-        document.querySelectorAll('.nav-links a, .footer-links a').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                window.scrollTo({
-                    top: targetElement.offsetTop - 80,
-                    behavior: 'smooth'
-                });
+        /* =============================================
+           NAV — Scroll Spy + Shrink on Scroll
+           ============================================= */
+        const header = document.getElementById('main-header');
+        const sections = document.querySelectorAll('section[id]');
+        const navItems = document.querySelectorAll('.nav-links > li[data-section]');
+
+        function onScroll() {
+            // Shrink header
+            if (window.scrollY > 40) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+
+            // Scroll spy — find which section is in view
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 120;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.section === current) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll(); // run once on load
+
+        /* =============================================
+           NAV — Smooth Scroll for all anchor links
+           ============================================= */
+        function smoothScrollTo(targetId) {
+            const el = document.querySelector(targetId);
+            if (!el) return;
+            window.scrollTo({
+                top: el.offsetTop - 80,
+                behavior: 'smooth'
+            });
+        }
+
+        // Desktop nav scroll links
+        document.querySelectorAll('.nav-scroll-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    smoothScrollTo(href);
+                }
             });
         });
-        
-        // 简单的数据更新效果
+
+        // Desktop top-level nav links (direct anchors)
+        document.querySelectorAll('.nav-links > li > a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    smoothScrollTo(href);
+                }
+            });
+        });
+
+        // Footer links
+        document.querySelectorAll('.footer-links a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    smoothScrollTo(href);
+                }
+            });
+        });
+
+        /* =============================================
+           MOBILE NAV — Hamburger + Accordion
+           ============================================= */
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const mobileNav    = document.getElementById('mobile-nav');
+
+        function openMobileNav() {
+            hamburgerBtn.classList.add('open');
+            mobileNav.classList.add('open');
+            mobileNav.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileNav() {
+            hamburgerBtn.classList.remove('open');
+            mobileNav.classList.remove('open');
+            mobileNav.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        hamburgerBtn.addEventListener('click', () => {
+            if (mobileNav.classList.contains('open')) {
+                closeMobileNav();
+            } else {
+                openMobileNav();
+            }
+        });
+
+        // Mobile accordion
+        document.querySelectorAll('.mobile-nav-links > li > a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                const li = this.parentElement;
+                const hasSubmenu = li.querySelector('.mobile-submenu');
+
+                if (hasSubmenu) {
+                    e.preventDefault();
+                    li.classList.toggle('open');
+                } else if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    smoothScrollTo(href);
+                    closeMobileNav();
+                }
+            });
+        });
+
+        // Mobile submenu links
+        document.querySelectorAll('.mobile-scroll-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    // Only prevent if it's a submenu link (parent has submenu)
+                    if (!this.parentElement.classList.contains('mobile-nav-links > li')) {
+                        e.preventDefault();
+                        smoothScrollTo(href);
+                        closeMobileNav();
+                    }
+                }
+            });
+        });
+
+        // Close mobile nav when clicking backdrop
+        mobileNav.addEventListener('click', function(e) {
+            if (e.target === mobileNav) closeMobileNav();
+        });
+
+        /* =============================================
+           STATS — Count-Up Animation (Intersection)
+           ============================================= */
         function animateValue(element, start, end, duration) {
             let startTimestamp = null;
             const step = (timestamp) => {
@@ -1566,8 +2351,7 @@
             window.requestAnimationFrame(step);
         }
         
-        // 当可持续数据部分进入视口时触发动画
-        const observer = new IntersectionObserver((entries) => {
+        const statsObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const statNumbers = document.querySelectorAll('.stat-number');
@@ -1585,14 +2369,16 @@
                         
                         animateValue(stat, 0, targetValue, 2000);
                     });
-                    observer.disconnect();
+                    statsObserver.disconnect();
                 }
             });
         }, { threshold: 0.5 });
         
-        observer.observe(document.getElementById('sustainability'));
+        statsObserver.observe(document.getElementById('sustainability'));
         
-        // 添加卡片悬停效果增强
+        /* =============================================
+           CARDS — Hover Lift Effect
+           ============================================= */
         document.querySelectorAll('.concept-card, .space-card, .project-card, .community-card, .stat-item').forEach(card => {
             card.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-8px)';
@@ -1603,7 +2389,9 @@
             });
         });
         
-        // 模态框功能
+        /* =============================================
+           MODALS
+           ============================================= */
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'flex';
             document.body.style.overflow = 'hidden';
@@ -1614,7 +2402,6 @@
             document.body.style.overflow = 'auto';
         }
         
-        // 点击模态框外部关闭
         window.onclick = function(event) {
             document.querySelectorAll('.modal-overlay').forEach(modal => {
                 if (event.target === modal) {
@@ -1624,34 +2411,35 @@
             });
         }
         
-        // 支持选项选择功能
+        /* =============================================
+           SUPPORT OPTIONS — Select Amount
+           ============================================= */
         function selectSupportOption(element, amount) {
-            // 移除所有选项的选中状态
             const parent = element.parentElement;
             parent.querySelectorAll('.support-option').forEach(option => {
                 option.classList.remove('selected');
             });
-            
-            // 添加当前选项的选中状态
             element.classList.add('selected');
-            
-            // 更新隐藏的输入值
-            const form = element.closest('form');
-            const amountInput = form.querySelector('input[type="hidden"]');
-            amountInput.value = amount;
+            const form = element.closest('.modal-body').querySelector('form');
+            if (form) {
+                const amountInput = form.querySelector('input[type="hidden"]');
+                if (amountInput) amountInput.value = amount;
+            }
         }
         
-        // 表单处理函数
+        /* =============================================
+           FORM HANDLERS
+           ============================================= */
         function handleLogin(event) {
             event.preventDefault();
             closeModal('loginModal');
-            showSuccess('登录成功', '您已成功登录您的JEBIstarter账户。');
+            showSuccess('Welcome back!', 'You have successfully signed in to your JEBIstarter account.');
         }
         
         function handleMembershipSignup(event) {
             event.preventDefault();
             closeModal('membershipModal');
-            showSuccess('会员注册成功', '感谢您成为JEBIstarter会员！会员卡将在3个工作日内发送至您的邮箱。');
+            showSuccess('Membership Confirmed!', 'Welcome to JEBIstarter! Your member card will be emailed within 3 business days.');
         }
         
         function handleProjectSupport(event, projectName) {
@@ -1659,16 +2447,15 @@
             const form = event.target;
             const amount = form.querySelector('input[type="hidden"]').value;
             closeModal(form.closest('.modal-overlay').id);
-            showSuccess('支持成功', `感谢您支持"${projectName}"项目！您的¥${amount}支持已确认，项目更新将发送至您的邮箱。`);
+            showSuccess('Support Confirmed!', `Thank you for backing "${projectName}"! Your ¥${amount} pledge has been received. Project updates will be sent to your email.`);
         }
         
         function handleEventRegistration(event, eventName) {
             event.preventDefault();
             closeModal(event.target.closest('.modal-overlay').id);
-            showSuccess('报名成功', `您已成功报名"${eventName}"！活动详情已发送至您的邮箱。`);
+            showSuccess('Registration Complete!', `You're registered for "${eventName}". Event details have been sent to your email.`);
         }
         
-        // 显示成功消息
         function showSuccess(title, message) {
             document.getElementById('successTitle').textContent = title;
             document.getElementById('successMessage').textContent = message;
